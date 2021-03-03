@@ -10,6 +10,7 @@
     <title>{% block title %}Test your language{% endblock %}</title>
 </head>
 <body>
+    {% include 'include/navbar.html' %}
     {% block content %}{% endblock %}
     <script type="text/javascript" src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}/"></script>
 </body>
