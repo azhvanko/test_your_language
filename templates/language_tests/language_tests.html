@@ -1,0 +1,21 @@
+{% extends 'language_tests/base.html' %}
+{% block title %}Список тестов{% endblock %}
+{% block content %}
+    <br>
+    <div class="container-fluid">
+        <p class="h1">Тесты по английскому языку</p>
+        <br>
+        <h5 class="text-left">
+            Проверьте ваши знания грамматики и лексики английского языка с помощью
+            интерактивных онлайн тестов.
+        </h5>
+    </div>
+    <br>
+    {% for item in language_test_list %}
+        <div class="container-fluid">
+            <h2>
+                <a class="btn btn-warning btn-lg" href="{{ item.get_absolute_url }}">{{ item.name }}</a>
+            </h2>
+        </div>
+    {% endfor %}
+{% endblock %}
