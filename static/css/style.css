@@ -5,3 +5,20 @@ body {
 .navbar {
     background-color: #cc17bab8;
 }
+
+.breadcrumbs {
+    margin-bottom: 1.2em;
+    margin-top: 1.2em;
+    margin-left: 1.2em;
+    font: 16px/1.4 'Roboto', sans-serif;
+}
+
+.breadcrumbs .link {
+    color: #aaa;
+    text-decoration: none;
+}
+
+.breadcrumbs .sep {
+    margin: 0 .8em 0 1em;
+    color: #aaa;
+}
