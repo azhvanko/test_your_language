@@ -8,7 +8,7 @@ class LanguageTestType(models.Model):
         unique=True,
         verbose_name='Тип теста'
     )
-    is_published = models.BooleanField(default=True, verbose_name='Опубликовано')
+    is_published = models.BooleanField(default=True, verbose_name='Опубликован')
 
     objects = models.Manager()
 
@@ -36,3 +36,72 @@ class Answer(models.Model):
 
     def __str__(self):
         return self.answer
+
+
+class Question(models.Model):
+    question = models.CharField(
+        max_length=256,
+        unique=True,
+        verbose_name='Вопрос'
+    )
+    is_published = models.BooleanField(default=True, verbose_name='Опубликован')
+    test_type = models.ForeignKey(
+        LanguageTestType,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name='Тип теста',
+        related_name='questions'
+    )
+    answers = models.ManyToManyField(
+        Answer,
+        through='QuestionAnswer',
+        through_fields=('question', 'answer')
+    )
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = 'Вопрос'
+        verbose_name_plural = 'Вопросы'
+        ordering = ['question', ]
+
+    def __str__(self):
+        return self.question
+
+
+class QuestionAnswer(models.Model):
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        verbose_name='Вопрос'
+    )
+    answer = models.ForeignKey(
+        Answer,
+        on_delete=models.CASCADE,
+        verbose_name='Ответ на вопрос'
+    )
+    is_right_answer = models.BooleanField(
+        default=False,
+        verbose_name='Правильный ответ'
+    )
+
+    objects = models.Manager()
+
+    class Meta:
+        constraints = (
+            models.UniqueConstraint(
+                fields=('question', 'answer',),
+                name='%(app_label)s_%(class)s_question_answer_constraint'
+            ),
+            models.UniqueConstraint(
+                fields=('question',),
+                condition=models.Q(is_right_answer=True),
+                name='%(app_label)s_%(class)s_question_is_right_answer_constraint'
+            ),
+        )
+        ordering = ['question', ]
+        verbose_name = 'Ответ на вопрос'
+        verbose_name_plural = 'Ответы на вопросы'
+
+    def __str__(self):
+        return f'{self.question} | {str(self.answer)} | {self.is_right_answer}'

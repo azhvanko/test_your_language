@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from language_tests.models import Answer, LanguageTestType
+from language_tests.models import (
+    Answer,
+    LanguageTestType,
+    Question,
+    QuestionAnswer
+)
 
 
 class AnswerAdmin(admin.ModelAdmin):
@@ -16,5 +21,22 @@ class LanguageTestTypeAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
+class QuestionAnswerAdmin(admin.ModelAdmin):
+    list_display = ('question', 'answer', 'is_right_answer',)
+    list_display_links = ('question',)
+    list_editable = ('is_right_answer',)
+    search_fields = ('question__question', 'answer__answer',)
+
+
+class QuestionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'question', 'test_type', 'is_published',)
+    list_display_links = ('id', 'question',)
+    list_editable = ('is_published',)
+    list_filter = ('is_published', 'test_type',)
+    search_fields = ('question', 'test_type__name',)
+
+
 admin.site.register(Answer, AnswerAdmin)
 admin.site.register(LanguageTestType, LanguageTestTypeAdmin)
+admin.site.register(QuestionAnswer, QuestionAnswerAdmin)
+admin.site.register(Question, QuestionAdmin)
