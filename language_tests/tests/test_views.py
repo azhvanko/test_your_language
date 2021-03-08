@@ -64,6 +64,28 @@ class LanguageTestDetailViewTest(LanguageTestMixin, TestCase):
             f'{self.app_name}/language_test_preview.html'
         )
 
+    def test_HTTP404_for_invalid_test_type(self):
+        response = self.client.get(
+            reverse(
+                self.path_name,
+                kwargs={'pk': self.number_all_test_types + 1}
+            )
+        )
+        self.assertEqual(response.status_code, 404)
+
+    def test_HTTP404_for_not_published_test_type(self):
+        response = self.client.get(
+            reverse(
+                self.path_name,
+                kwargs={'pk': self.number_active_test_types + 1}
+            )
+        )
+        self.assertEqual(response.status_code, 404)
+
     def test_title_value(self):
         response = self.client.get(reverse(self.path_name, kwargs={'pk': 1}))
         self.assertContains(response, '<title>test_type_1</title>')
+
+    def test_context_data(self):
+        response = self.client.get(reverse(self.path_name, kwargs={'pk': 1}))
+        self.assertIsNotNone(response.context_data.get('language_test', None))
