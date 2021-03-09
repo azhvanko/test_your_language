@@ -1,17 +1,13 @@
 from django.views.generic import DetailView, ListView
 
-from language_tests.models import LanguageTestType
+from language_tests.utils import LanguageTestMixin
 
 
-class LanguageTestListView(ListView):
+class LanguageTestListView(LanguageTestMixin, ListView):
     context_object_name = 'language_test_list'
-    model = LanguageTestType
-    queryset = LanguageTestType.objects.filter(is_published=True).only('id', 'name')
     template_name = 'language_tests/language_tests.html'
 
 
-class LanguageTestDetailView(DetailView):
+class LanguageTestDetailView(LanguageTestMixin, DetailView):
     context_object_name = 'language_test'
-    model = LanguageTestType
-    queryset = LanguageTestType.objects.filter(is_published=True).only('id', 'name')
     template_name = 'language_tests/language_test_preview.html'
