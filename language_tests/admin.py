@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from language_tests.forms import QuestionAnswersInlineFormSet
 from language_tests.models import (
     Answer,
     LanguageTestType,
@@ -28,7 +29,15 @@ class QuestionAnswerAdmin(admin.ModelAdmin):
     search_fields = ('question__question', 'answer__answer',)
 
 
+class QuestionAnswerInline(admin.StackedInline):
+    formset = QuestionAnswersInlineFormSet
+    max_num = 4
+    min_num = 4
+    model = QuestionAnswer
+
+
 class QuestionAdmin(admin.ModelAdmin):
+    inlines = (QuestionAnswerInline,)
     list_display = ('id', 'question', 'test_type', 'is_published',)
     list_display_links = ('id', 'question',)
     list_editable = ('is_published',)
