@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 
@@ -104,4 +105,26 @@ class QuestionAnswer(models.Model):
         verbose_name_plural = 'Ответы на вопросы'
 
     def __str__(self):
-        return f'{self.question} | {str(self.answer)} | {self.is_right_answer}'
+        return (
+            f'Вопрос - "{self.question}"; Ответ - "{self.answer}"; '
+            f'Правильный ответ - {self.is_right_answer}'
+        )
+
+
+class TestResult(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    answer = models.ForeignKey(Answer, on_delete=models.CASCADE)
+    solution_date = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = 'Результат теста'
+        verbose_name_plural = 'Результаты тестов'
+
+    def __str__(self):
+        return (
+            f'Пользователь - "{self.user}"; Вопрос - "{self.question}"; '
+            f'Ответ - "{self.answer}"'
+        )
