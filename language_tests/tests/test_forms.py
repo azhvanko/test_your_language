@@ -5,16 +5,10 @@ from django.test import TestCase
 
 from language_tests.forms import QuestionAnswersInlineFormSet
 from language_tests.models import QuestionAnswer, Question
+from language_tests.tests.utils import LanguageTestMixin
 
 
-class QuestionAnswersInlineFormSetTest(TestCase):
-    fixtures = [
-        'language_test_types',
-        'answers',
-        'questions',
-    ]
-    max_num = 4
-    min_num = 4
+class LanguageTestFormsMixin(LanguageTestMixin):
 
     @staticmethod
     def create_data(
@@ -39,20 +33,13 @@ class QuestionAnswersInlineFormSetTest(TestCase):
                 data[f'questionanswer_set-{i}-is_right_answer'] = 'on'
         return data
 
-    @staticmethod
-    def create_question(
-            question: str,
-            is_published: bool,
-            test_type_id: int
-    ) -> Question:
-        return Question.objects.create(
-            question=question,
-            is_published=is_published,
-            test_type_id=test_type_id
-        )
+
+class QuestionAnswersInlineFormSetTest(LanguageTestFormsMixin, TestCase):
+    max_num = 4
+    min_num = 4
 
     def test_formset(self):
-        question = self.create_question('question ___ 0', True, 1)
+        question = self.create_question('question ___ 0', 'test_type_1')
         QuestionAnswersFormSet = inlineformset_factory(
             Question,
             QuestionAnswer,

@@ -1,60 +1,15 @@
+from datetime import datetime
+
 from django.test import TestCase
 
 from language_tests.models import (
     Answer,
     LanguageTestType,
     Question,
-    QuestionAnswer
+    QuestionAnswer,
+    TestResult
 )
-
-
-class LanguageTestMixin:
-    app_name = 'language_tests'
-    default_number_answers = 4  # for 1 question
-    number_all_test_types = 10
-    number_answers = number_all_test_types * default_number_answers
-    number_published_test_types = number_all_test_types // 2
-    number_questions = number_all_test_types * 20
-    number_published_questions = int(number_questions * 0.8)
-    number_question_answers = number_questions * default_number_answers
-
-    fixtures = [
-        'language_test_types',
-        'questions',
-        'answers',
-        'question_answers',
-    ]
-
-    @staticmethod
-    def create_language_test_type(name: str) -> LanguageTestType:
-        return LanguageTestType.objects.create(name=name)
-
-    @staticmethod
-    def create_answer(answer: str) -> Answer:
-        return Answer.objects.create(answer=answer)
-
-    @staticmethod
-    def create_question(question: str, test_type: str) -> Question:
-        _test_type = LanguageTestType.objects.get(name=test_type)
-        return Question.objects.create(
-            question=question,
-            is_published=True,
-            test_type=_test_type
-        )
-
-    @staticmethod
-    def create_question_answer(
-            question: str,
-            answer: str,
-            is_right_answer: bool
-    ) -> QuestionAnswer:
-        _answer = Answer.objects.get(answer=answer)
-        _question = Question.objects.get(question=question)
-        return QuestionAnswer.objects.create(
-            question=_question,
-            answer=_answer,
-            is_right_answer=is_right_answer
-        )
+from language_tests.tests.utils import LanguageTestMixin
 
 
 class LanguageTestTypeTest(LanguageTestMixin, TestCase):
@@ -232,4 +187,54 @@ class QuestionAnswerTest(LanguageTestMixin, TestCase):
 
     def test_str_method(self):
         question_answer = QuestionAnswer.objects.get(id=1)
-        self.assertEqual(str(question_answer), 'question ___ 1 | answer_1 | True')
+        self.assertEqual(
+            str(question_answer),
+            'Вопрос - "question ___ 1"; Ответ - "answer_1"; Правильный ответ - True'
+        )
+
+
+class TestResultTest(LanguageTestMixin, TestCase):
+
+    def test_object_creation(self):
+        test_result = self.create_test_result(
+            user='test_user_1',
+            question='question ___ 1',
+            answer='answer_1'
+        )
+        self.assertEqual(test_result.user.username, 'test_user_1')
+        self.assertEqual(test_result.question.question, 'question ___ 1')
+        self.assertEqual(test_result.answer.answer, 'answer_1')
+        self.assertIsInstance(test_result.solution_date, datetime)
+
+    def test_objects_creation(self):
+        test_results = TestResult.objects.all()
+        self.assertEqual(len(test_results), 10)
+
+    def test_user(self):
+        test_result = TestResult.objects.get(id=1)
+        fk = test_result._meta.get_field('user').many_to_one
+        self.assertTrue(fk)
+
+    def test_question(self):
+        test_result = TestResult.objects.get(id=1)
+        fk = test_result._meta.get_field('question').many_to_one
+        self.assertTrue(fk)
+
+    def test_answer(self):
+        test_result = TestResult.objects.get(id=1)
+        fk = test_result._meta.get_field('answer').many_to_one
+        self.assertTrue(fk)
+
+    def test_meta(self):
+        self.assertEqual(TestResult._meta.verbose_name, 'Результат теста')
+        self.assertEqual(
+            TestResult._meta.verbose_name_plural,
+            'Результаты тестов'
+        )
+
+    def test_str_method(self):
+        test_result = TestResult.objects.get(id=1)
+        self.assertEqual(
+            str(test_result),
+            'Пользователь - "test_user_1"; Вопрос - "question ___ 1"; Ответ - "answer_1"'
+        )

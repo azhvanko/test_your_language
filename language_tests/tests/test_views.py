@@ -1,16 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-
-class LanguageTestMixin:
-    app_name = 'language_tests'
-    number_active_test_types = 5
-    number_all_test_types = 10
-
-    fixtures = [
-        'language_test_types',
-        'answers',
-    ]
+from language_tests.tests.utils import LanguageTestMixin
 
 
 class LanguageTestListViewTest(LanguageTestMixin, TestCase):
@@ -37,7 +28,7 @@ class LanguageTestListViewTest(LanguageTestMixin, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             len(response.context_data['language_test_list']),
-            self.number_active_test_types
+            self.number_published_test_types
         )
 
     def test_title_value(self):
@@ -77,7 +68,7 @@ class LanguageTestDetailViewTest(LanguageTestMixin, TestCase):
         response = self.client.get(
             reverse(
                 self.path_name,
-                kwargs={'pk': self.number_active_test_types + 1}
+                kwargs={'pk': self.number_published_test_types + 1}
             )
         )
         self.assertEqual(response.status_code, 404)
