@@ -5,7 +5,8 @@ from language_tests.models import (
     Answer,
     LanguageTestType,
     Question,
-    QuestionAnswer
+    QuestionAnswer,
+    TestResult
 )
 
 
@@ -22,6 +23,13 @@ class LanguageTestTypeAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
+class TestResultAdmin(admin.ModelAdmin):
+    list_display = ('user', 'question', 'answer', 'solution_date',)
+    list_display_links = ('user', 'question',)
+    list_filter = ('user',)
+    search_fields = ('user__username', 'question__question',)
+
+
 class QuestionAnswerAdmin(admin.ModelAdmin):
     list_display = ('question', 'answer', 'is_right_answer',)
     list_display_links = ('question',)
@@ -30,6 +38,7 @@ class QuestionAnswerAdmin(admin.ModelAdmin):
 
 
 class QuestionAnswerInline(admin.StackedInline):
+    can_delete = False
     formset = QuestionAnswersInlineFormSet
     max_num = 4
     min_num = 4
@@ -47,5 +56,6 @@ class QuestionAdmin(admin.ModelAdmin):
 
 admin.site.register(Answer, AnswerAdmin)
 admin.site.register(LanguageTestType, LanguageTestTypeAdmin)
+admin.site.register(TestResult, TestResultAdmin)
 admin.site.register(QuestionAnswer, QuestionAnswerAdmin)
 admin.site.register(Question, QuestionAdmin)
