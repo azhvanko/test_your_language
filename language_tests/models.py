@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 
+from language_tests.validators import validate_question
+
 
 class LanguageTestType(models.Model):
     name = models.CharField(
@@ -43,7 +45,8 @@ class Question(models.Model):
     question = models.CharField(
         max_length=256,
         unique=True,
-        verbose_name='Вопрос'
+        verbose_name='Вопрос',
+        validators=[validate_question, ]
     )
     is_published = models.BooleanField(default=True, verbose_name='Опубликован')
     test_type = models.ForeignKey(
