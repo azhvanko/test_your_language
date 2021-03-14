@@ -1,0 +1,43 @@
+{% extends 'language_tests/base.html' %}
+{% block title %}{{ language_test.name }}{% endblock %}
+{% load static %}
+{% block content %}
+    {% include 'include/_breadcrumbs.html' %}
+    <div class="test-title">
+        <h1>
+            {{ language_test.name }}
+        </h1>
+    </div>
+    {% include 'include/_test_score.html' %}
+    <ul class="test-body" id="languageTest" onclick="selectAnswer(event)">
+        {% for question in questions %}
+            <li data-question="{{ question.question_id }}">
+                <div class="test-number">{{ forloop.counter }}.</div>
+                <div class="test-wrap">
+                    <div class="test-question">
+                        {% for item in question.question %}
+                            {% if item == '___' %}
+                                <span class="test-gap test-gap-miss test-gap-miss-empty"></span>
+                            {% else %}
+                                {{ item }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <ul class="test-answers">
+                        {% for pk, answer in question.answers.items %}
+                            <li><span class="test-answer" data-answer="{{ pk }}">{{ answer }}</span></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+    <br>
+    <div class="btn-restart-test" hidden="true">
+        <a class="btn btn-warning" href="{% url 'language_test' language_test.pk %}">Начать сначала</a>
+    </div>
+    <div class="btn-check-result">
+        <a class="btn btn-warning" onclick="getTestResult('{% url 'test_result' %}')">Проверить</a>
+    </div>
+    <script type="text/javascript" src="{% static 'js/language_test.js' %}"></script>
+{% endblock %}
