@@ -12,8 +12,8 @@
             Мы подготовили для теста большее количество вопросов, чем выводится
             на странице. Вы можете проходить тест многократно без их повторения.
         </p>
-        <h2>
-            <a class="btn btn-warning btn-lg" href="#">Начать</a>
-        </h2>
+        <div class="btn-start-test">
+            <a class="btn btn-warning btn-lg" href="{% url 'language_test' language_test.pk %}">Начать</a>
+        </div>
     </div>
 {% endblock %}
