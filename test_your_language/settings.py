@@ -1,16 +1,20 @@
-import os
 from pathlib import Path
+
+import environ
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_FILE_PATH = BASE_DIR / '.env'
+
+env = environ.Env()
+environ.Env.read_env(env_file=str(ENV_FILE_PATH))
 
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = env.str('SECRET_KEY')
 
+DEBUG = env.bool('DEBUG', default=False)
 
-DEBUG = int(os.environ.get('DEBUG', default=0))
-
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(' ')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
 
 
 INSTALLED_APPS = [
@@ -61,12 +65,12 @@ WSGI_APPLICATION = 'test_your_language.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),
-        'PORT': '5432',
+        'ENGINE': env.str('DB_ENGINE'),
+        'NAME': env.str('DB_NAME'),
+        'USER': env.str('DB_USER'),
+        'PASSWORD': env.str('DB_PASSWORD'),
+        'HOST': env.str('DB_HOST'),
+        'PORT': env.int('DB_PORT'),
     }
 }
 
