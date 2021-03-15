@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, ListView, View
 
 from language_tests.models import LanguageTestType
-from language_tests.utils import generate_questions_list, get_right_answers
+from language_tests.services import generate_questions_list, get_right_answers
 
 
 class LanguageTestMixin:
