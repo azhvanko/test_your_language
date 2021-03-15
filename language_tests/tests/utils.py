@@ -13,6 +13,7 @@ class LanguageTestMixin:
     app_name = 'language_tests'
     default_number_answers = 4  # for 1 question
     default_number_questions = 20  # for 1 test type
+    default_number_test_questions = 10  # for 1 test
     default_test_users_password = 'test_password'
     number_all_test_types = 10
     number_answers = number_all_test_types * default_number_answers
