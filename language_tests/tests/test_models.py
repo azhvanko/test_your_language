@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from language_tests.models import (
@@ -9,6 +10,7 @@ from language_tests.models import (
     QuestionAnswer,
     TestResult
 )
+from language_tests.validators import validate_question
 from language_tests.tests.utils import LanguageTestMixin
 
 
@@ -104,6 +106,19 @@ class QuestionTest(LanguageTestMixin, TestCase):
         self.assertEqual(field_label, 'Вопрос')
         self.assertEqual(max_length, 256)
         self.assertTrue(unique)
+
+    def test_question_validator(self):
+        invalid_questions = [
+            'question',
+            'question __ 1',
+            'question ____ 1',
+            '1234567890',
+            '12345 ___ 6789',
+            'test question'
+        ]
+        for question in invalid_questions:
+            with self.assertRaises(ValidationError):
+                validate_question(question)
 
     def test_is_published(self):
         question = Question.objects.get(id=1)
