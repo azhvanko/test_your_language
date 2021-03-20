@@ -32,6 +32,10 @@ body {
     margin-bottom: 1.5em;
 }
 
+.home-page {
+    margin-top: 1.5em;
+}
+
 .test-score {
     display: inline-block;
     margin-bottom: .5em;

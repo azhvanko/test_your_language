@@ -28,6 +28,7 @@ INSTALLED_APPS = [
 
     'debug_toolbar',
 
+    'home.apps.HomeConfig',
     'language_tests.apps.LanguageTestsConfig',
 ]
 
@@ -91,9 +92,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LANGUAGE_CODE = 'ru'
+LANGUAGE_CODE = env.str('LANGUAGE_CODE')
 
-TIME_ZONE = 'Europe/Minsk'
+TIME_ZONE = env.str('TZ')
 
 USE_I18N = True
 
