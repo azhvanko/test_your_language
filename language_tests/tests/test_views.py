@@ -217,9 +217,9 @@ class LanguageTestResultViewTest(LanguageTestMixin, TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.json()['data'], correct_answers)
 
-    def test_do_not_save_user_answer_in_db(self):
+    def test_correct_answers_in_response(self):
         user = 'test_user_2'
-        user_answers, _ = self.get_answers('empty')
+        user_answers, correct_answers = self.get_answers('wrong')
         login = self.client.login(
             username=user,
             password=self.default_test_users_password
@@ -231,20 +231,4 @@ class LanguageTestResultViewTest(LanguageTestMixin, TestCase):
         )
         self.assertTrue(login)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual({}, self.get_user_answers(user))
-
-    def test_save_user_answer_in_db(self):
-        user = 'test_user_2'
-        user_answers, _ = self.get_answers('correct')
-        login = self.client.login(
-            username=user,
-            password=self.default_test_users_password
-        )
-        response = self.client.post(
-            reverse(self.path_name),
-            user_answers,
-            content_type='application/json'
-        )
-        self.assertTrue(login)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()['data'], self.get_user_answers(user))
+        self.assertEqual(response.json()['data'], correct_answers)
