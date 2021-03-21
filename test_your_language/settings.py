@@ -1,3 +1,4 @@
+import socket
 from pathlib import Path
 
 import environ
@@ -108,4 +109,14 @@ STATIC_DIR = BASE_DIR / 'static'
 STATICFILES_DIRS = [STATIC_DIR, ]
 
 
-INTERNAL_IPS = ['127.0.0.1', ]
+ip = socket.gethostbyname(socket.gethostname())
+INTERNAL_IPS = ['127.0.0.1', ip[:-1] + '1', ]
+
+
+CELERY_BROKER_URL = env.str('CELERY_BROKER_URL')
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = env.str('CELERY_RESULT_BACKEND')
+CELERY_ACCEPT_CONTENT = ['json', ]
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = env.str('TZ')

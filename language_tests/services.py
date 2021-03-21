@@ -1,8 +1,10 @@
 from typing import Dict, List, NamedTuple, Optional, Union
 
+from django.db import transaction
 from django.db.models import QuerySet
 
 from language_tests.models import QuestionAnswer, Question, TestResult
+from language_tests.tasks import save_user_answers
 
 
 class LanguageQuestion(NamedTuple):
@@ -78,17 +80,17 @@ def get_right_answers(
     for item in questions:
         if user_id and _answers[item['question_id']] == item['answer_id']:
             valid_answers.append(
-                TestResult(
-                    question_id=item['question_id'],
-                    answer_id=item['answer_id'],
-                    user_id=user_id
-                )
+                {
+                    'user_id': user_id,
+                    'question_id': item['question_id'],
+                    'answer_id': item['answer_id']
+                }
             )
         if item['is_right_answer']:
             result[item['question_id']] = item['answer_id']
 
     if user_id:
-        TestResult.objects.bulk_create(valid_answers)
+        transaction.on_commit(lambda: save_user_answers.delay(valid_answers))
 
     return result
 

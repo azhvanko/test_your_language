@@ -13,5 +13,3 @@ RUN pip install --no-cache-dir --upgrade pip
 RUN pip install --no-cache-dir -r dev_requirements.txt
 
 COPY . .
-
-ENTRYPOINT ["/usr/src/app/wait-for-postgres.sh"]
