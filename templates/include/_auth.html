@@ -1,0 +1,15 @@
+{% if request.user.is_authenticated %}
+    <span class="navbar-text mb-0 h5">
+        <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">{{ request.user.username }}</button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{% url 'profile' request.user.username %}">Профиль</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'logout' %}">Выход</a></li>
+        </ul>
+    </span>
+{% else %}
+    <span class="navbar-text mb-0 h5">
+        <a class="btn btn-warning" href="{% url 'login' %}">Войти</a>
+        <a class="btn btn-warning" href="{% url 'signup' %}">Зарегистрироваться</a>
+    </span>
+{% endif %}
