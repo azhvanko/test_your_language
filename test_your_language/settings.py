@@ -29,6 +29,7 @@ INSTALLED_APPS = [
 
     'debug_toolbar',
 
+    'accounts.apps.AccountsConfig',
     'home.apps.HomeConfig',
     'language_tests.apps.LanguageTestsConfig',
 ]
