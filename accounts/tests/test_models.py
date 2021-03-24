@@ -1,36 +1,17 @@
 from uuid import UUID
 
-from django.contrib.auth.models import User
 from django.test import TestCase
 
+from accounts.tests.utils import AccountsMixin
 from accounts.models import ActivationLink
 
 
-class ActivationLinkTest(TestCase):
-    user = {
-        'username': 'test_user_0',
-        'email': 'test_user_0@example.com',
-        'is_active': False,
-    }
+class ActivationLinkTest(AccountsMixin, TestCase):
 
     @classmethod
     def setUpTestData(cls):
         super().setUpTestData()
         cls.create_activation_link(**cls.user)
-
-    @staticmethod
-    def create_activation_link(
-            username: str,
-            email: str,
-            is_active: bool
-    ) -> ActivationLink:
-        user = User.objects.create_user(
-            username=username,
-            email=email,
-            is_active=is_active
-        )
-        activation_link = ActivationLink(user=user).save()
-        return activation_link
 
     def test_object_creation(self):
         username = self.user['username']
