@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import authenticate
 from django.contrib.auth.forms import (
     AuthenticationForm,
     UserCreationForm,
@@ -6,6 +7,45 @@ from django.contrib.auth.forms import (
 )
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+
+
+class DeactivationForm(AuthenticationForm):
+    username = UsernameField()
+    password = forms.CharField(
+        label='Пароль',
+        strip=False,
+        widget=forms.PasswordInput(
+            attrs={
+                'autocomplete': 'current-password',
+                'class': 'form-control',
+                'placeholder': 'password',
+            }
+        ),
+    )
+
+    def __init__(self, request, *args, **kwargs):
+        super().__init__(request, *args, **kwargs)
+        self._update_errors_list()
+
+    def _update_errors_list(self):
+        self.error_messages.update(
+            {
+                'invalid_password': 'Пожалуйста, введите правильный пароль.',
+            }
+        )
+
+    def clean_password(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username is not None and password:
+            user = authenticate(self.request, username=username, password=password)
+            if user is None:
+                raise ValidationError(
+                    self.error_messages['invalid_password'],
+                    code='invalid_password',
+                )
+        return password
 
 
 class LoginForm(AuthenticationForm):
