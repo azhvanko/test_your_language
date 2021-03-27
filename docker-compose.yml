@@ -6,7 +6,10 @@ services:
     restart: unless-stopped
     container_name: redis_dev
   db:
-    build: ./postgres
+    build:
+      context: ./postgres
+      dockerfile: ./Dockerfile
+    image: tyl_db:dev
     restart: unless-stopped
     container_name: postgres_dev
     volumes:
@@ -14,7 +17,10 @@ services:
     env_file:
       - ./.env
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: tyl_web:dev
     container_name: django_dev
     entrypoint: /usr/src/app/wait-for-postgres.sh
     command: python manage.py runserver 0.0.0.0:8000
@@ -26,10 +32,27 @@ services:
       - ./.env
     depends_on:
       - db
-  celery:
-    build: .
-    container_name: celery_dev
-    command: celery -A test_your_language worker -l INFO -f logs/celery.log
+  celery_worker:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: tyl_celery_worker:dev
+    container_name: celery_worker_dev
+    command: celery -A test_your_language worker -l INFO -f logs/celery_worker.log
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - ./.env
+    depends_on:
+      - redis
+      - web
+  celery_beat:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: tyl_celery_beat:dev
+    container_name: celery_beat_dev
+    command: celery -A test_your_language beat -l INFO -f logs/celery_beat.log
     volumes:
       - .:/usr/src/app
     env_file:
