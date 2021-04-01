@@ -1,0 +1,31 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Деактивация аккаунта{% endblock %}
+{% block content %}
+    <div class="container m-lg-3">
+        <p class="h3">Для деактивации вашего аккаунта введите пароль в форме ниже.</p>
+        <form method="post">
+            {% csrf_token %}
+            <fieldset class="module aligned wide">
+                <p>
+                    <label hidden="true" for="id_username">Имя пользователя:</label>
+                    <input hidden="true" type="text" value="{{ request.user }}" name="username" class="form-control" maxlength="150" required="" id="id_username">
+                </p>
+                <div class="form-row">
+                    {{ form.password.errors }}
+                    <label for="id_password">Пароль:</label>
+                    <input type="password" name="password" autocomplete="current-password" class="form-control" placeholder="password" required="" id="id_password">
+                </div>
+            </fieldset>
+            <input type="hidden" name="next" value="{% url 'home' %}">
+            <br>
+            <div class="row">
+                <div class="col-10">
+                    <button type="submit" class="btn btn-warning btn-block>">Деактивировать</button>
+                </div>
+                <div class="col-2">
+                    <a class="btn btn-warning" href="{% url 'home' %}">На главную</a>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
