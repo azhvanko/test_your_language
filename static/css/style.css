@@ -6,6 +6,10 @@ body {
     background-color: #cc17bab8;
 }
 
+.home-page {
+    margin-top: 1.5em;
+}
+
 .breadcrumbs {
     margin-bottom: 1.2em;
     margin-top: 1.2em;
@@ -30,10 +34,6 @@ body {
 .btn-check-result .btn, .btn-restart-test .btn {
     margin-left: 1.5em;
     margin-bottom: 1.5em;
-}
-
-.home-page {
-    margin-top: 1.5em;
 }
 
 .test-score {
@@ -157,4 +157,24 @@ body {
 .test-answer-selected-wrong {
     background-color: #f192a0;
     color: #b12525
+}
+
+.activate-user, .reactivate-user {
+    margin-top: 1.8em;
+}
+
+.activate-user .btn, .reactivate-user .btn {
+    margin-top: 2.8em;
+}
+
+.sign-up-form-restore-link, .login-form-restore-link {
+    color: #999;
+}
+
+.user-profile {
+    margin-top: 2.2em;
+}
+
+.user-profile .btn {
+    margin-top: 8.8em;
 }
