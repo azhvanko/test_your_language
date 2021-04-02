@@ -4,7 +4,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import (
     LoginView,
     logout_then_login,
-    LogoutView
+    LogoutView,
+    PasswordChangeDoneView,
+    PasswordChangeView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView,
+    PasswordResetDoneView,
+    PasswordResetView
 )
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect
@@ -95,6 +101,30 @@ class _LogoutView(LogoutView):
     template_name = 'accounts/logged_out.html'
 
 
+class _PasswordChangeView(PasswordChangeView):
+    template_name = 'accounts/password_change_form.html'
+
+
+class _PasswordChangeDoneView(PasswordChangeDoneView):
+    template_name = 'accounts/password_change_done.html'
+
+
+class _PasswordResetView(LogoutRequiredMixin, PasswordResetView):
+    template_name = 'accounts/password_reset_form.html'
+
+
+class _PasswordResetCompleteView(LogoutRequiredMixin, PasswordResetCompleteView):
+    template_name = 'accounts/password_reset_complete.html'
+
+
+class _PasswordResetConfirmView(LogoutRequiredMixin, PasswordResetConfirmView):
+    template_name = 'accounts/password_reset_confirm.html'
+
+
+class _PasswordResetDoneView(LogoutRequiredMixin, PasswordResetDoneView):
+    template_name = 'accounts/password_reset_done.html'
+
+
 class ReactivateUserView(LogoutRequiredMixin, TemplateView):
     template_name = 'accounts/reactivate_user.html'
 
@@ -147,6 +177,12 @@ activate_user = ActivateUserView.as_view()
 deactivate_user = DeactivateUserView.as_view()
 login = _LoginView.as_view()
 logout = _LogoutView.as_view()
+password_change = _PasswordChangeView.as_view()
+password_change_done = _PasswordChangeDoneView.as_view()
+password_reset = _PasswordResetView.as_view()
+password_reset_complete = _PasswordResetCompleteView.as_view()
+password_reset_confirm = _PasswordResetConfirmView.as_view()
+password_reset_done = _PasswordResetDoneView.as_view()
 profile = UserProfileView.as_view()
 reactivate_user = ReactivateUserView.as_view()
 signup = SignUpView.as_view()

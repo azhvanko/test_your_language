@@ -178,3 +178,22 @@ body {
 .user-profile .btn {
     margin-top: 8.8em;
 }
+
+.password-reset, .password-change {
+    margin-top: 1.5em;
+    margin-left: 0.8em;
+    font: 16px/1.4 'Roboto', sans-serif;
+}
+
+.password-reset .form-row, .password-change .form-row {
+    margin-top: 0.5em;
+}
+
+.password-reset .btn, .password-change .btn {
+    margin-left: -0.1em;
+    margin-top: 1.5em;
+}
+
+.password-reset .form-control, .password-change .form-control {
+    width: 80%;
+}

@@ -1,4 +1,7 @@
+from typing import Tuple
+
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
 from django.test import TestCase
 from django.urls import reverse
 
@@ -24,6 +27,13 @@ class AuthViewsTestCase(AccountsMixin, TestCase):
 
         assert not User.objects.filter(username=cls.unregistered_user['username'])
         assert not User.objects.filter(email=cls.unregistered_user['email'])
+
+    def login(self, user: User) -> Tuple[User, bool]:
+        login = self.client.login(
+            username=user.username,
+            password=self.default_test_users_password
+        )
+        return user, login
 
 
 class ActivateUserViewTest(AuthViewsTestCase):
@@ -55,11 +65,7 @@ class ActivateUserViewTest(AuthViewsTestCase):
         )
 
     def test_response_if_user_is_active(self):
-        user = self.active_user
-        login = self.client.login(
-            username=user.username,
-            password=self.default_test_users_password
-        )
+        user, login = self.login(self.active_user)
         response = self.client.get(
             reverse(
                 self.path_name,
@@ -142,11 +148,7 @@ class DeactivateUserViewTest(AuthViewsTestCase):
     path_name = 'deactivate_user'
 
     def test_view_url_exists_at_desired_location(self):
-        user = self.active_user
-        login = self.client.login(
-            username=user.username,
-            password=self.default_test_users_password
-        )
+        user, login = self.login(self.active_user)
         response = self.client.get(
             f'/accounts/profile/{user.username}/deactivate/'
         )
@@ -155,11 +157,7 @@ class DeactivateUserViewTest(AuthViewsTestCase):
         self.assertIn('form', response.context_data)
 
     def test_view_url_accessible_by_name_and_uses_correct_template(self):
-        user = self.active_user
-        login = self.client.login(
-            username=user.username,
-            password=self.default_test_users_password
-        )
+        user, login = self.login(self.active_user)
         response = self.client.get(
             reverse(self.path_name, kwargs={'user': user.username})
         )
@@ -187,11 +185,7 @@ class DeactivateUserViewTest(AuthViewsTestCase):
         )
 
     def test_success_redirect_with_authentication_user(self):
-        user = self.active_user
-        login = self.client.login(
-            username=user.username,
-            password=self.default_test_users_password
-        )
+        user, login = self.login(self.active_user)
         response = self.client.post(
             reverse(self.path_name, kwargs={'user': user.username}),
             data={
@@ -204,11 +198,7 @@ class DeactivateUserViewTest(AuthViewsTestCase):
         self.assertRedirects(response, reverse('home'))
 
     def test_title_value(self):
-        user = self.active_user
-        login = self.client.login(
-            username=user.username,
-            password=self.default_test_users_password
-        )
+        user, login = self.login(self.active_user)
         response = self.client.get(
             f'/accounts/profile/{user.username}/deactivate/'
         )
@@ -294,6 +284,152 @@ class LogoutViewTest(AuthViewsTestCase):
             self.assertRedirects(response, reverse('home'))
 
 
+class PasswordChangeViewTest(AuthViewsTestCase):
+    path_name = 'password_change'
+
+    def test_view_url_exists_at_desired_location(self):
+        _, login = self.login(self.active_user)
+        response = self.client.get('/accounts/password/change/')
+        self.assertTrue(login)
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_and_uses_correct_template(self):
+        _, login = self.login(self.active_user)
+        response = self.client.get(reverse(self.path_name))
+        self.assertTrue(login)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            f'{self.app_name}/password_change_form.html'
+        )
+
+
+class PasswordChangeDoneViewTest(AuthViewsTestCase):
+    path_name = 'password_change_done'
+
+    def test_view_url_exists_at_desired_location(self):
+        _, login = self.login(self.active_user)
+        response = self.client.get('/accounts/password/change/done/')
+        self.assertTrue(login)
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_and_uses_correct_template(self):
+        _, login = self.login(self.active_user)
+        response = self.client.get(reverse(self.path_name))
+        self.assertTrue(login)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            f'{self.app_name}/password_change_done.html'
+        )
+
+
+class PasswordResetViewTest(AuthViewsTestCase):
+    path_name = 'password_reset'
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get('/accounts/password/reset/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_and_uses_correct_template(self):
+        response = self.client.get(reverse(self.path_name))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            f'{self.app_name}/password_reset_form.html'
+        )
+
+    def test_redirect_if_user_is_authenticate(self):
+        _, login = self.login(self.active_user)
+        response = self.client.get(reverse(self.path_name))
+        self.assertTrue(login)
+        self.assertRedirects(response, reverse('home'))
+
+
+class PasswordResetCompleteViewTest(AuthViewsTestCase):
+    path_name = 'password_reset_complete'
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get('/accounts/password/reset/complete/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_and_uses_correct_template(self):
+        response = self.client.get(reverse(self.path_name))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            f'{self.app_name}/password_reset_complete.html'
+        )
+
+    def test_redirect_if_user_is_authenticate(self):
+        _, login = self.login(self.active_user)
+        response = self.client.get(reverse(self.path_name))
+        self.assertTrue(login)
+        self.assertRedirects(response, reverse('home'))
+
+
+class PasswordResetConfirmViewTest(AuthViewsTestCase):
+    path_name = 'password_reset_confirm'
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.uidb64 = 'Mg'
+        cls.token = default_token_generator.make_token(cls.active_user)
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get(
+            f'/accounts/password/reset/confirm/{self.uidb64}/{self.token}/'
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_and_uses_correct_template(self):
+        response = self.client.get(
+            reverse(
+                self.path_name,
+                kwargs={'uidb64': self.uidb64, 'token': self.token},
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            f'{self.app_name}/password_reset_confirm.html'
+        )
+
+    def test_redirect_if_user_is_authenticate(self):
+        _, login = self.login(self.active_user)
+        response = self.client.get(
+            reverse(
+                self.path_name,
+                kwargs={'uidb64': self.uidb64, 'token': self.token},
+            )
+        )
+        self.assertTrue(login)
+        self.assertRedirects(response, reverse('home'))
+
+
+class PasswordResetDoneViewTest(AuthViewsTestCase):
+    path_name = 'password_reset_done'
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get('/accounts/password/reset/done/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name_and_uses_correct_template(self):
+        response = self.client.get(reverse(self.path_name))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(
+            response,
+            f'{self.app_name}/password_reset_done.html'
+        )
+
+    def test_redirect_if_user_is_authenticate(self):
+        _, login = self.login(self.active_user)
+        response = self.client.get(reverse(self.path_name))
+        self.assertTrue(login)
+        self.assertRedirects(response, reverse('home'))
+
+
 class ReactivateUserViewTest(AuthViewsTestCase):
     path_name = 'reactivate_user'
 
@@ -312,11 +448,7 @@ class ReactivateUserViewTest(AuthViewsTestCase):
         )
 
     def test_redirect_if_user_is_authenticate(self):
-        user = self.active_user
-        login = self.client.login(
-            username=user.username,
-            password=self.default_test_users_password
-        )
+        user, login = self.login(self.active_user)
         response = self.client.get(
             reverse(self.path_name, kwargs={'user': user.username, },)
         )
@@ -388,21 +520,13 @@ class UserProfileViewTest(AuthViewsTestCase):
     path_name = 'profile'
 
     def test_view_url_exists_at_desired_location(self):
-        user = self.active_user
-        login = self.client.login(
-            username=user.username,
-            password=self.default_test_users_password
-        )
+        user, login = self.login(self.active_user)
         response = self.client.get(f'/accounts/profile/{user.username}/')
         self.assertTrue(login)
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name_and_uses_correct_template(self):
-        user = self.active_user
-        login = self.client.login(
-            username=user.username,
-            password=self.default_test_users_password
-        )
+        user, login = self.login(self.active_user)
         response = self.client.get(
             reverse(self.path_name, kwargs={'user': user.username})
         )
@@ -424,11 +548,7 @@ class UserProfileViewTest(AuthViewsTestCase):
         )
 
     def test_redirect_if_user_uses_invalid_username(self):
-        user = self.active_user
-        login = self.client.login(
-            username=user.username,
-            password=self.default_test_users_password
-        )
+        user, login = self.login(self.active_user)
         response = self.client.get(
             reverse(
                 self.path_name,
@@ -442,11 +562,7 @@ class UserProfileViewTest(AuthViewsTestCase):
         )
 
     def test_title_value(self):
-        user = self.active_user
-        login = self.client.login(
-            username=user.username,
-            password=self.default_test_users_password
-        )
+        user, login = self.login(self.active_user)
         response = self.client.get(
             reverse(self.path_name, kwargs={'user': user.username})
         )
