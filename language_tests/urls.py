@@ -1,16 +1,11 @@
 from django.urls import path
 
-from language_tests.views import (
-    LanguageTestDetailView,
-    LanguageTestListView,
-    LanguageTestResultView,
-    LanguageTestView
-)
+from language_tests import views
 
 
 urlpatterns = [
-    path('', LanguageTestListView.as_view(), name='language_tests'),
-    path('<int:pk>/', LanguageTestDetailView.as_view(), name='language_test_preview'),
-    path('<int:pk>/test/', LanguageTestView.as_view(), name='language_test'),
-    path('result/', LanguageTestResultView.as_view(), name='test_result'),
+    path('', views.language_tests, name='language_tests'),
+    path('<int:pk>/', views.language_test_preview, name='language_test_preview'),
+    path('<int:pk>/test/', views.language_test, name='language_test'),
+    path('result/', views.test_result, name='test_result'),
 ]

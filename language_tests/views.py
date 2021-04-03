@@ -67,3 +67,9 @@ class LanguageTestResultView(View):
             right_answers = get_right_answers(answers, request.user.id)
         finally:
             return JsonResponse({'data': right_answers})
+
+
+language_tests = LanguageTestListView.as_view()
+language_test_preview = LanguageTestDetailView.as_view()
+language_test = LanguageTestView.as_view()
+test_result = LanguageTestResultView.as_view()
