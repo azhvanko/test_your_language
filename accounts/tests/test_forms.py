@@ -108,3 +108,19 @@ class SignUpFormTest(AuthFormsTestCase):
             form.errors['email'].get_json_data()[0]['message'],
             str(form.error_messages['registered_email'])
         )
+
+    def test_form_invalid_if_invalid_username(self):
+        user = dict(self.unregistered_user)
+        invalid_usernames = ('user.1', 'user!@#$%^&*', 'пользователь',)
+        for username in invalid_usernames:
+            user['username'] = username
+            form = SignUpForm(data=user)
+            self.assertFalse(form.is_valid())
+            self.assertEqual(
+                form.errors['username'].get_json_data()[0]['code'],
+                'invalid_username'
+            )
+            self.assertEqual(
+                form.errors['username'].get_json_data()[0]['message'],
+                str(form.error_messages['invalid_username'])
+            )

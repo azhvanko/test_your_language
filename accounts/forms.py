@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import (
@@ -154,11 +156,24 @@ class SignUpForm(UserCreationForm):
                 code='registered_email'
             )
 
+    def clean_username(self):
+        pattern = r'^[a-zA-Z0-9_]+$'
+        if not re.fullmatch(pattern, self.cleaned_data['username'], re.MULTILINE):
+            raise ValidationError(
+                self.error_messages['invalid_username'],
+                code='invalid_username'
+            )
+        return self.cleaned_data['username']
+
     def _update_errors_list(self):
         self.error_messages.update(
             {
                 'registered_email': (
                     'Пользователь с таким email адресом уже существует.'
+                ),
+                'invalid_username': (
+                    'Имя пользователя может содержать буквы латинского '
+                    'алфавита (a-z), цифры (0-9), а также знак подчёркивания.'
                 ),
             }
         )
