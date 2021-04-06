@@ -67,7 +67,7 @@ def send_activation_email(
     reactivate_message = 'повторной ' if reactivate else ''
     message = (
         f'Добрый день!\n\n'
-        f'Ваш email был использован при регистрации на нашем сайте.\n'
+        f'Ваш email был использован при регистрации на сайте {site}.\n'
         f'Для {reactivate_message}активации вашей учетной записи - перейдите '
         f'по ссылке ниже.\n\n{link}\n\n'
     )
@@ -85,7 +85,7 @@ def _create_activation_link(user_id: int, site: str) -> str:
     activation_link = ActivationLink(user_id=user_id)
     activation_link.save()
 
-    return f'http://{site}{activation_link.get_absolute_url()}'
+    return f'https://{site}{activation_link.get_absolute_url()}'
 
 
 def _activate_email(activation_link: ActivationLink) -> None:
