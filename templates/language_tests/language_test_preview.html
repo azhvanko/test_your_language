@@ -1,0 +1,19 @@
+{% extends 'language_tests/base.html' %}
+{% block title %}{{ language_test.name }}{% endblock %}
+{% block content %}
+    {% include 'include/_breadcrumbs.html' %}
+    <div class="container-fluid">
+        <p class="h1">{{ language_test.name }}</p>
+        <br>
+        <p>
+            Из предложенных вариантов ответа необходимо выбрать только один,
+            который на ваш взгляд является правильным.
+            <br>
+            Мы подготовили для теста большее количество вопросов, чем выводится
+            на странице. Вы можете проходить тест многократно без их повторения.
+        </p>
+        <div class="btn-start-test">
+            <a class="btn btn-warning btn-lg" href="{% url 'language_test' language_test.pk %}">Начать</a>
+        </div>
+    </div>
+{% endblock %}

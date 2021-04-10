@@ -1,0 +1,22 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Авторизация{% endblock %}
+{% block content %}
+    <div class="container mt-3">
+        <p class="h1">Авторизация</p>
+        <br>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="hidden" name="next" value="{% url 'home' %}">
+            <br>
+            <div class="row">
+                <div class="col-10">
+                    <button type="submit" class="btn btn-warning btn-block>">Войти</button>
+                </div>
+                <div class="col-2">
+                    <a href="{% url 'password_reset' %}" class="login-form-restore-link">Забыли пароль?</a>
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

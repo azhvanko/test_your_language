@@ -1,0 +1,10 @@
+{% extends 'accounts/base.html' %}
+{% block title %}Активация аккаунта{% endblock %}
+{% block content %}
+    <div class="container-fluid activate-user">
+        <p class="h3">{{ message }}</p>
+        <h2>
+            <a class="btn btn-warning btn-lg" href="{% url 'home' %}">На главную</a>
+        </h2>
+    </div>
+{% endblock %}
