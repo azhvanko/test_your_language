@@ -2,6 +2,7 @@
 {% block title %}{{ language_test.name }}{% endblock %}
 {% load static %}
 {% block content %}
+    {% csrf_token %}
     {% include 'include/_breadcrumbs.html' %}
     <div class="test-title">
         <h1>
